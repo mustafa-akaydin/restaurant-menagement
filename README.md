@@ -14,9 +14,13 @@ React ve Bootstrap kullanılarak geliştirilmiş modern bir restoran yönetim we
   - Öğeleri kategorilere ayırma
   - Fiyat ve açıklamaları belirleme
 - **Kullanıcı Kimlik Doğrulama**:
-  - Güvenli giriş sistemi
+  - Firebase Authentication ile güvenli giriş sistemi
   - Rol tabanlı erişim kontrolü
   - Kullanıcı profil yönetimi
+- **Veri Yönetimi**:
+  - Firebase Realtime Database ile gerçek zamanlı veri senkronizasyonu
+  - Menü ve kullanıcı verilerinin güvenli depolanması
+  - Otomatik yedekleme ve veri kurtarma
 
 ### Müşteri Özellikleri
 - **Dijital Menü**:
@@ -24,13 +28,15 @@ React ve Bootstrap kullanılarak geliştirilmiş modern bir restoran yönetim we
   - Tüm cihazlar için duyarlı tasarım
   - Kategori bazlı gezinme
   - Detaylı ürün açıklamaları ve fiyatlandırma
+  - Firebase ile gerçek zamanlı menü güncellemeleri
 
 ## 🚀 Proje İlerlemesi
 
 ### Tamamlanan Özellikler
 - ✅ Üretim URL desteği ile QR Kod Oluşturucu
 - ✅ Yönetici paneli arayüzü
-- ✅ Temel kimlik doğrulama sistemi
+- ✅ Firebase Authentication ile güvenli giriş sistemi
+- ✅ Firebase Realtime Database entegrasyonu
 - ✅ Menü yönetim sistemi
 - ✅ Duyarlı tasarım uygulaması
 
@@ -38,12 +44,18 @@ React ve Bootstrap kullanılarak geliştirilmiş modern bir restoran yönetim we
 - 🔄 Gelişmiş menü özelleştirme seçenekleri
 - 🔄 Gerçek zamanlı sipariş yönetimi
 - 🔄 Analiz paneli
+- 🔄 Firebase Cloud Functions ile otomatik işlemler
 
 ## 🛠️ Teknik Altyapı
 
 - **Ön Yüz**: React.js, React Bootstrap
 - **Stil**: CSS, Bootstrap
 - **QR Oluşturma**: qrcode.react
+- **Backend**: Firebase
+  - Authentication
+  - Realtime Database
+  - Hosting
+  - Cloud Functions
 - **Dağıtım**: Vercel
 
 ## 📦 Kurulum
