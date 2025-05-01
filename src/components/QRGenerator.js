@@ -9,7 +9,7 @@ const QRGenerator = () => {
   const [restaurantName, setRestaurantName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [ipAddress, setIpAddress] = useState('192.168.1.100'); // Varsayılan IP
+  const [ipAddress, setIpAddress] = useState('restaurant-menagement.vercel.app'); // Production URL
 
   useEffect(() => {
     // Admin olarak giriş yapmış kullanıcının restoran bilgilerini al
@@ -49,7 +49,7 @@ const QRGenerator = () => {
   }, []);
 
   // QR kodun yönlendireceği URL'i oluştur
-  const qrValue = `http://${ipAddress}:3000/menu/${restaurantId}`;
+  const qrValue = `https://${ipAddress}/menu/${restaurantId}`;
 
   const downloadQR = () => {
     const canvas = document.getElementById('qr-code');
@@ -114,7 +114,7 @@ const QRGenerator = () => {
       <div className="mb-3">
         <Form.Control
           type="text"
-          value={qrValue}
+          value={`https://restaurant-menagement.vercel.app/menu/${restaurantId}`}
           readOnly
           className="text-center"
           onClick={copyToClipboard}
