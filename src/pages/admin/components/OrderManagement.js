@@ -16,30 +16,49 @@ const OrderManagement = () => {
 
   const fetchOrders = async () => {
     try {
+      setLoading(true);
       const ordersData = await DataService.getOrders();
-      setOrders(ordersData);
-      setLoading(false);
+      
+      if (!Array.isArray(ordersData)) {
+        throw new Error('Sipariş verileri beklenen formatta değil');
+      }
+      
+      // Verileri doğrula ve varsayılan değerler ekle
+      const validatedOrders = ordersData.map(order => ({
+        id: order.id || '',
+        orderNumber: order.orderNumber || 0,
+        customerName: order.customerName || 'Misafir Müşteri',
+        customerPhone: order.customerPhone || '',
+        items: Array.isArray(order.items) ? order.items : [],
+        total: order.total || 0,
+        status: order.status || 'pending',
+        createdAt: order.createdAt || new Date().toISOString()
+      }));
+      
+      setOrders(validatedOrders);
     } catch (error) {
-      console.error('Error fetching orders:', error);
-      toast.error('Siparişler yüklenirken bir hata oluştu.');
+      console.error('Error in fetchOrders:', error);
+      toast.error('Siparişler yüklenirken bir hata oluştu: ' + error.message);
+      setOrders([]);
+    } finally {
       setLoading(false);
-    }
-  };
-
-  const handleStatusUpdate = async (orderId, newStatus) => {
-    try {
-      await DataService.updateOrderStatus(orderId, newStatus);
-      toast.success('Sipariş durumu güncellendi!');
-      fetchOrders();
-    } catch (error) {
-      console.error('Error updating order status:', error);
-      toast.error('Sipariş durumu güncellenirken bir hata oluştu.');
     }
   };
 
   const handleShowDetails = (order) => {
     setSelectedOrder(order);
     setShowDetailsModal(true);
+  };
+
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      await DataService.updateOrderStatus(orderId, newStatus);
+      fetchOrders();
+      toast.success('Sipariş durumu güncellendi');
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      toast.error('Sipariş durumu güncellenirken bir hata oluştu');
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -85,6 +104,7 @@ const OrderManagement = () => {
           <tr>
             <th>Sipariş No</th>
             <th>Müşteri</th>
+            <th>Ürünler</th>
             <th>Toplam</th>
             <th>Durum</th>
             <th>Tarih</th>
@@ -94,10 +114,22 @@ const OrderManagement = () => {
         <tbody>
           {orders.map((order) => (
             <tr key={order.id}>
-              <td>#{order.id.slice(-6)}</td>
-              <td>{order.customerName}</td>
-              <td>{order.total}₺</td>
-              <td>{getStatusBadge(order.status)}</td>
+              <td>#{order.orderNumber || 'N/A'}</td>
+              <td>
+                {order.customerName}
+                {order.customerPhone && <div className="text-muted small">{order.customerPhone}</div>}
+              </td>
+              <td>
+                <ul className="list-unstyled mb-0">
+                  {(order.items || []).map((item, index) => (
+                    <li key={index}>
+                      {item.name} x {item.quantity}
+                    </li>
+                  ))}
+                </ul>
+              </td>
+              <td>{order.total || 0}₺</td>
+              <td>{getStatusBadge(order.status || 'pending')}</td>
               <td>{moment(order.createdAt).format('DD/MM/YYYY HH:mm')}</td>
               <td>
                 <Button
@@ -106,26 +138,26 @@ const OrderManagement = () => {
                   className="me-2"
                   onClick={() => handleShowDetails(order)}
                 >
-                  <i className="fas fa-eye"></i>
+                  Detaylar
                 </Button>
                 {order.status === 'pending' && (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleStatusUpdate(order.id, 'preparing')}
-                  >
-                    <i className="fas fa-utensils"></i>
-                  </Button>
-                )}
-                {order.status === 'preparing' && (
                   <Button
                     variant="success"
                     size="sm"
                     className="me-2"
-                    onClick={() => handleStatusUpdate(order.id, 'ready')}
+                    onClick={() => handleStatusChange(order.id, 'preparing')}
                   >
-                    <i className="fas fa-check"></i>
+                    Hazırlanıyor
+                  </Button>
+                )}
+                {order.status === 'preparing' && (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => handleStatusChange(order.id, 'ready')}
+                  >
+                    Hazır
                   </Button>
                 )}
                 {order.status === 'ready' && (
@@ -133,18 +165,18 @@ const OrderManagement = () => {
                     variant="success"
                     size="sm"
                     className="me-2"
-                    onClick={() => handleStatusUpdate(order.id, 'delivered')}
+                    onClick={() => handleStatusChange(order.id, 'delivered')}
                   >
-                    <i className="fas fa-truck"></i>
+                    Teslim Edildi
                   </Button>
                 )}
-                {['pending', 'preparing'].includes(order.status) && (
+                {order.status !== 'delivered' && order.status !== 'cancelled' && (
                   <Button
                     variant="danger"
                     size="sm"
-                    onClick={() => handleStatusUpdate(order.id, 'cancelled')}
+                    onClick={() => handleStatusChange(order.id, 'cancelled')}
                   >
-                    <i className="fas fa-times"></i>
+                    İptal Et
                   </Button>
                 )}
               </td>
@@ -161,10 +193,11 @@ const OrderManagement = () => {
         <Modal.Body>
           {selectedOrder && (
             <>
-              <h5>Sipariş No: #{selectedOrder.id.slice(-6)}</h5>
+              <h5>Sipariş No: #{selectedOrder.orderNumber}</h5>
               <p><strong>Müşteri:</strong> {selectedOrder.customerName}</p>
-              <p><strong>Telefon:</strong> {selectedOrder.phone}</p>
-              <p><strong>Adres:</strong> {selectedOrder.address}</p>
+              {selectedOrder.customerPhone && (
+                <p><strong>Telefon:</strong> {selectedOrder.customerPhone}</p>
+              )}
               <p><strong>Tarih:</strong> {moment(selectedOrder.createdAt).format('DD/MM/YYYY HH:mm')}</p>
               <p><strong>Durum:</strong> {getStatusBadge(selectedOrder.status)}</p>
               
@@ -174,7 +207,7 @@ const OrderManagement = () => {
                   <tr>
                     <th>Ürün</th>
                     <th>Adet</th>
-                    <th>Fiyat</th>
+                    <th>Birim Fiyat</th>
                     <th>Toplam</th>
                   </tr>
                 </thead>

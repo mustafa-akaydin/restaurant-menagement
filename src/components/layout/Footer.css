@@ -1,0 +1,72 @@
+/* Footer Styling */
+footer {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 40px 0;
+  margin-top: 50px;
+}
+
+footer a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+footer a:hover {
+  color: white;
+}
+
+.social-link {
+  color: var(--secondary-color);
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.social-link:hover {
+  color: #fff;
+  transform: translateY(-3px);
+}
+
+.footer-links li {
+  transition: all 0.3s ease;
+}
+
+.hover-link {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.hover-link:hover {
+  color: var(--secondary-color) !important;
+  padding-left: 5px;
+}
+
+.contact-info li {
+  transition: all 0.3s ease;
+}
+
+.contact-info li:hover {
+  transform: translateX(5px);
+}
+
+.contact-info li:hover .text-light {
+  color: var(--secondary-color) !important;
+}
+
+/* Footer responsive */
+@media (max-width: 768px) {
+  footer {
+    padding: 30px 0;
+    margin-top: 30px;
+  }
+
+  .footer-links,
+  .contact-info {
+    margin-bottom: 20px;
+  }
+
+  .social-link {
+    font-size: 1.25rem;
+  }
+} 

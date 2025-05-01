@@ -1,91 +1,93 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+import { FaFacebook, FaTwitter, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import './Footer.css';
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-dark text-light py-5">
+    <footer className="bg-dark text-light py-5 mt-5">
       <Container>
-        <Row>
-          <Col md={4} className="mb-4 mb-md-0">
-            <h5 className="mb-3 text-white">
-              <i className="fas fa-utensils me-2"></i>
-              Restaurant Management
-            </h5>
-            <p className="text-white-50">
-              Modern ve kullanıcı dostu restoran yönetim çözümü ile işletmenizi bir adım öne taşıyın.
+        <Row className="g-4">
+          <Col md={4}>
+            <h5 className="text-secondary mb-4">Restaurant</h5>
+            <p className="text-light">
+              Lezzetli yemeklerimiz ve sıcak atmosferimizle sizleri ağırlamaktan mutluluk duyarız.
             </p>
-            <div className="social-links mt-3">
-              <a href="#" className="text-white me-3">
-                <i className="fab fa-facebook-f"></i>
+            <div className="social-links mt-4">
+              <a href="#" className="social-link me-3">
+                <FaFacebook />
               </a>
-              <a href="#" className="text-white me-3">
-                <i className="fab fa-twitter"></i>
+              <a href="#" className="social-link me-3">
+                <FaTwitter />
               </a>
-              <a href="#" className="text-white me-3">
-                <i className="fab fa-instagram"></i>
+              <a href="#" className="social-link me-3">
+                <FaInstagram />
               </a>
-              <a href="#" className="text-white">
-                <i className="fab fa-linkedin-in"></i>
+              <a href="#" className="social-link">
+                <FaYoutube />
               </a>
             </div>
           </Col>
-
-          <Col md={4} className="mb-4 mb-md-0">
-            <h5 className="mb-3 text-white">Hızlı Bağlantılar</h5>
-            <ul className="list-unstyled">
+          <Col md={4}>
+            <h5 className="text-secondary mb-4">Hızlı Bağlantılar</h5>
+            <ul className="list-unstyled footer-links">
               <li className="mb-2">
-                <Link to="/menu" className="text-white-50 text-decoration-none">
-                  <i className="fas fa-chevron-right me-2"></i> Menü
+                <Link to="/" className="text-light text-decoration-none hover-link">
+                  Ana Sayfa
                 </Link>
               </li>
               <li className="mb-2">
-                <Link to="/reservations" className="text-white-50 text-decoration-none">
-                  <i className="fas fa-chevron-right me-2"></i> Rezervasyonlar
+                <Link to="/menu" className="text-light text-decoration-none hover-link">
+                  Menü
                 </Link>
               </li>
               <li className="mb-2">
-                <Link to="/orders" className="text-white-50 text-decoration-none">
-                  <i className="fas fa-chevron-right me-2"></i> Siparişler
+                <Link to="/reservations" className="text-light text-decoration-none hover-link">
+                  Rezervasyonlar
+                </Link>
+              </li>
+              <li className="mb-2">
+                <Link to="/about" className="text-light text-decoration-none hover-link">
+                  Hakkımızda
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-white-50 text-decoration-none">
-                  <i className="fas fa-chevron-right me-2"></i> İletişim
+                <Link to="/contact" className="text-light text-decoration-none hover-link">
+                  İletişim
                 </Link>
               </li>
             </ul>
           </Col>
-
           <Col md={4}>
-            <h5 className="mb-3 text-white">İletişim</h5>
-            <ul className="list-unstyled text-white-50">
-              <li className="mb-2">
-                <i className="fas fa-map-marker-alt me-2"></i>
-                Örnek Mahallesi, Örnek Sokak No:1
+            <h5 className="text-secondary mb-4">İletişim</h5>
+            <ul className="list-unstyled contact-info">
+              <li className="mb-3 d-flex align-items-center">
+                <i className="fas fa-map-marker-alt me-2 text-secondary"></i>
+                <span className="text-light">123 Restaurant Caddesi, İstanbul</span>
               </li>
-              <li className="mb-2">
-                <i className="fas fa-phone me-2"></i>
-                +90 555 123 4567
+              <li className="mb-3 d-flex align-items-center">
+                <i className="fas fa-phone me-2 text-secondary"></i>
+                <span className="text-light">+90 (212) 123 45 67</span>
               </li>
-              <li className="mb-2">
-                <i className="fas fa-envelope me-2"></i>
-                info@restaurant.com
+              <li className="mb-3 d-flex align-items-center">
+                <i className="fas fa-envelope me-2 text-secondary"></i>
+                <span className="text-light">info@restaurant.com</span>
               </li>
-              <li>
-                <i className="fas fa-clock me-2"></i>
-                Her gün 09:00 - 23:00
+              <li className="d-flex align-items-center">
+                <i className="fas fa-clock me-2 text-secondary"></i>
+                <span className="text-light">Her gün 10:00 - 23:00</span>
               </li>
             </ul>
           </Col>
         </Row>
-
-        <hr className="my-4 border-light" />
-
+        <hr className="my-4 border-secondary" />
         <Row>
           <Col className="text-center">
-            <p className="mb-0 text-white-50">
-              &copy; {new Date().getFullYear()} Restaurant Management. Tüm hakları saklıdır.
+            <p className="mb-0 text-light">
+              &copy; {currentYear} Restaurant. Tüm hakları saklıdır.
             </p>
           </Col>
         </Row>

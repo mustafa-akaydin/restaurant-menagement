@@ -1,0 +1,272 @@
+/* Navbar Styling */
+.navbar {
+  background-color: rgba(33, 37, 41, 0.8) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #fff !important;
+  padding: 0.5rem 1rem;
+}
+
+.nav-link-custom {
+  color: rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  background: none !important;
+}
+
+.nav-link-custom:hover {
+  color: var(--secondary-color) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.nav-link-custom.active {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+
+.nav-link-underline {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: var(--secondary-color);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link-custom:hover .nav-link-underline {
+  width: 80%;
+}
+
+/* Mobile Icons Styling */
+.navbar .d-lg-none .nav-action-btn {
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: none !important;
+  border: none !important;
+  padding: 0.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.navbar .d-lg-none .nav-action-btn:hover {
+  color: var(--secondary-color) !important;
+}
+
+.navbar .d-lg-none .nav-action-btn i {
+  font-size: 1.25rem;
+}
+
+.navbar .d-lg-none .nav-action-btn .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 50%;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Navbar toggler için özel stil */
+.navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.5);
+  padding: 0.5rem;
+  margin-right: 0;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Navbar collapse için özel stil */
+.navbar-collapse {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Siparişlerim ve Sepet butonları için özel stil */
+.navbar .nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar .nav-action-btn {
+  color: rgba(255, 255, 255, 0.8) !important;
+  background: none !important;
+  border: none !important;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.navbar .nav-action-btn:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.navbar .nav-action-btn i {
+  font-size: 1.1rem;
+}
+
+.navbar .nav-action-btn .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 50%;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dropdown menü için stil */
+.dropdown-menu {
+  border: none;
+  background: rgba(33, 37, 41, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dropdown-item {
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: var(--secondary-color);
+}
+
+.dropdown-item.active {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Butonlar için özel stil */
+.btn-outline-secondary {
+  border-color: var(--secondary-color);
+  color: var(--secondary-color);
+}
+
+.btn-outline-secondary:hover {
+  background-color: var(--secondary-color);
+  color: #fff;
+}
+
+.button-ripple {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Mobil menü için özel stil */
+@media (max-width: 991.98px) {
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+
+  .navbar-collapse {
+    padding: 1rem 0;
+    margin: 0 -1rem;
+  }
+
+  .navbar .nav-link {
+    padding: 0.75rem 1rem;
+    margin: 0;
+  }
+
+  .navbar .nav-actions {
+    padding: 0.5rem 1rem;
+    margin: 0 -1rem;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar .nav-action-btn {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 0.75rem 1rem;
+    margin: 0.25rem 0;
+  }
+
+  .navbar .btn {
+    width: 100%;
+    margin: 0.25rem 0;
+    text-align: left;
+  }
+
+  .navbar .dropdown {
+    width: 100%;
+  }
+
+  .navbar .dropdown-toggle {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1rem;
+  }
+
+  .navbar .dropdown-menu {
+    margin: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+  }
+
+  .navbar .dropdown-item {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Çok küçük ekranlar için ek düzenlemeler */
+@media (max-width: 375px) {
+  .navbar {
+    padding: 0.5rem;
+  }
+
+  .navbar-brand {
+    font-size: 1.25rem;
+    padding: 0.5rem;
+  }
+
+  .navbar .nav-link {
+    padding: 0.75rem 0.5rem;
+  }
+} 

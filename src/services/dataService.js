@@ -9,7 +9,9 @@ import {
   doc, 
   updateDoc,
   deleteDoc,
-  getDoc
+  getDoc,
+  orderBy,
+  limit
 } from 'firebase/firestore';
 import { 
   createUserWithEmailAndPassword, 
@@ -149,36 +151,89 @@ class DataService {
 
   // Sipariş işlemleri
   static async getOrders() {
-    const ordersSnapshot = await getDocs(collection(db, 'orders'));
-    return ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    try {
+      const ordersRef = collection(db, 'orders');
+      const ordersSnapshot = await getDocs(ordersRef);
+      const orders = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return orders;
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      throw error;
+    }
   }
 
-  static async addOrder(order) {
+  static async addOrder(orderData) {
     try {
-      const docRef = await addDoc(collection(db, 'orders'), {
-        ...order,
+      // Kullanıcı bilgilerini al
+      const user = JSON.parse(localStorage.getItem('user'));
+      
+      // Son sipariş numarasını al
+      const ordersRef = collection(db, 'orders');
+      const q = query(ordersRef, orderBy('orderNumber', 'desc'), limit(1));
+      const lastOrderQuery = await getDocs(q);
+      
+      let nextOrderNumber = 1;
+      if (!lastOrderQuery.empty) {
+        const lastOrder = lastOrderQuery.docs[0].data();
+        nextOrderNumber = lastOrder.orderNumber + 1;
+      }
+
+      // Sipariş öğelerini doğrula ve zenginleştir
+      const validatedItems = orderData.items.map(item => ({
+        id: item.id,
+        name: item.name || 'Ürün',
+        price: item.price || 0,
+        quantity: item.quantity || 1,
+        total: (item.price || 0) * (item.quantity || 1)
+      }));
+
+      // Toplam tutarı hesapla
+      const total = validatedItems.reduce((sum, item) => sum + item.total, 0);
+
+      // Sipariş verilerini oluştur
+      const order = {
+        orderNumber: nextOrderNumber,
+        items: validatedItems,
+        total: total,
         status: 'pending',
-        createdAt: new Date().toISOString()
-      });
-      return { id: docRef.id, ...order };
+        createdAt: new Date().toISOString(),
+        notes: orderData.notes || ''
+      };
+
+      // Kullanıcı durumuna göre müşteri bilgilerini ekle
+      if (user) {
+        // Giriş yapmış kullanıcı için
+        order.userId = user.id;
+        order.customerName = user.name;
+        order.customerEmail = user.email;
+        order.customerPhone = '';
+      } else {
+        // Misafir kullanıcı için
+        order.userId = '';
+        order.customerName = orderData.customerName || 'Misafir Müşteri';
+        order.customerEmail = '';
+        order.customerPhone = orderData.customerPhone || '';
+      }
+      
+      const docRef = await addDoc(collection(db, 'orders'), order);
+      return {
+        id: docRef.id,
+        ...order
+      };
     } catch (error) {
       console.error('Error adding order:', error);
       throw error;
     }
   }
 
-  static async updateOrderStatus(id, status) {
-    const orderRef = doc(db, 'orders', id);
-    await updateDoc(orderRef, { status });
+  static async updateOrderStatus(orderId, newStatus) {
+    const orderRef = doc(db, 'orders', orderId);
+    await updateDoc(orderRef, { status: newStatus });
   }
 
   static async cancelOrder(orderId) {
     const orderRef = doc(db, 'orders', orderId);
-    await updateDoc(orderRef, { 
-      status: 'cancelled',
-      cancelledAt: new Date().toISOString()
-    });
-    return orderId;
+    await updateDoc(orderRef, { status: 'cancelled' });
   }
 
   // Menü işlemleri
@@ -212,15 +267,12 @@ class DataService {
   // Auth methods
   static async login(email, password) {
     try {
-      console.log('Attempting to sign in with:', email);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      console.log('Firebase Auth sign in successful:', user.uid);
       
       // Get additional user data from Firestore
       const userDoc = await this.findUserByEmail(email);
       if (!userDoc) {
-        console.error('User document not found in Firestore');
         throw new Error('Kullanıcı bilgileri bulunamadı');
       }
 
@@ -230,12 +282,13 @@ class DataService {
         name: userDoc.name,
         role: userDoc.role
       };
-      console.log('Returning user data:', userData);
       return userData;
     } catch (error) {
       console.error('Login error:', error);
-      if (error.code === 'auth/user-not-found') {
-        throw new Error('Kullanıcı bulunamadı');
+      if (error.code === 'auth/invalid-credential') {
+        throw new Error('E-posta veya şifre hatalı');
+      } else if (error.code === 'auth/user-not-found') {
+        throw new Error('Bu e-posta adresi ile kayıtlı kullanıcı bulunamadı');
       } else if (error.code === 'auth/wrong-password') {
         throw new Error('Şifre hatalı');
       } else if (error.code === 'auth/invalid-email') {

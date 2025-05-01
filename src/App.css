@@ -14,523 +14,351 @@ html{
   padding: 0;
   overflow-x: hidden;
 }
+
 body {
   font-family: 'Poppins', sans-serif;
   background-color: #f8f9fa;
   color: var(--dark-color);
 }
 
-/* Navbar Styling */
-.navbar {
-  background-color: var(--primary-color) !important;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* Ana içerik alanı için padding */
+main {
+  padding-top: 80px;
 }
 
-.navbar-brand {
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: white !important;
+/* Mobil cihazlar için responsive padding */
+@media (max-width: 768px) {
+  main {
+    padding-top: 60px;
+  }
 }
 
-.nav-link {
-  font-weight: 500;
-  color: rgba(255,255,255,0.8) !important;
-  transition: color 0.3s ease;
+/* Sayfa başlıkları için margin */
+.page-title {
+  margin-bottom: 2rem;
 }
 
-.nav-link:hover {
-  color: white !important;
-}
-
-/* Home Page Styling */
-.hero-slider {
-  position: relative;
-  margin-bottom: 50px;
-}
-
-.slider-item {
-  position: relative;
-}
-
-.slider-image {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: white;
-}
-
-.slider-image::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.slider-content {
-  position: relative;
-  z-index: 1;
-  padding: 0 20px;
-  max-width: 800px;
-}
-
-.slider-content h1 {
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin-bottom: 20px;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
-.slider-content p {
-  font-size: 1.5rem;
-  margin-bottom: 30px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-}
-
-/* Features Section */
-.features-section {
-  background-color: white;
-}
-
-.feature-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-.feature-card i {
-  color: var(--secondary-color);
-}
-
-/* Call to Action Section */
-.cta-section {
-  background-color: var(--light-color);
-}
-
-.cta-section h2 {
-  color: var(--primary-color);
-  font-weight: 700;
-}
-
-.cta-section .lead {
-  color: var(--dark-color);
-  font-size: 1.2rem;
-}
-
-/* Special Offers Section */
-.special-offer-card {
-  border: none;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease;
-}
-
-.special-offer-card:hover {
-  transform: translateY(-5px);
-}
-
-.special-offer-card .card-img-top {
-  height: 200px;
-  object-fit: cover;
-}
-
-/* Card Styling */
+/* Kartlar için hover efekti */
 .card {
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease-in-out;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
-.card-img-top {
-  border-radius: 10px 10px 0 0;
-  height: 200px;
-  object-fit: cover;
-}
-
-/* Button Styling */
-.btn {
-  border-radius: 25px;
-  padding: 8px 20px;
-  font-weight: 500;
+/* Sepet butonu için animasyon */
+.cart-button {
   transition: all 0.3s ease;
 }
 
-.btn-primary {
-  background-color: var(--secondary-color);
-  border-color: var(--secondary-color);
-}
-
-.btn-primary:hover {
-  background-color: #c0392b;
-  border-color: #c0392b;
-  transform: translateY(-2px);
-}
-
-/* Form Styling */
-.form-control {
-  border-radius: 25px;
-  padding: 10px 20px;
-  border: 1px solid #ddd;
-}
-
-.form-control:focus {
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
-}
-
-/* Table Styling */
-.table {
-  background-color: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.table thead th {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-}
-
-/* Footer Styling */
-footer {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 40px 0;
-  margin-top: 50px;
-}
-
-footer a {
-  color: rgba(255,255,255,0.8);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-footer a:hover {
-  color: white;
-}
-
-/* Custom Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.fade-in {
-  animation: fadeIn 0.5s ease-out;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .slider-content h1 {
-    font-size: 2.5rem;
-  }
-  
-  .slider-content p {
-    font-size: 1.2rem;
-  }
-  
-  .card-img-top {
-    height: 150px;
-  }
-  
-  .btn {
-    padding: 6px 15px;
-  }
-  
-  .form-control {
-    padding: 8px 15px;
-  }
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--secondary-color);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #c0392b;
-}
-
-/* Menu Page Styling */
-.menu-item-card {
-  border: none;
-  border-radius: 15px;
-  overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.menu-item-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-}
-
-.menu-item-card .card-img-top {
-  height: 200px;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.menu-item-card:hover .card-img-top {
+.cart-button:hover {
   transform: scale(1.05);
 }
 
-.menu-item-card .card-body {
-  padding: 1.5rem;
+/* Loading spinner için stil */
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
 }
 
-.menu-item-card .card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.menu-item-card .card-text {
-  color: #666;
-  margin-bottom: 1rem;
-  min-height: 48px;
-}
-
-.menu-item-card .badge {
-  font-size: 0.8rem;
-  padding: 0.5em 1em;
-  text-transform: capitalize;
-}
-
-.form-select-lg, .form-control-lg {
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.form-select-lg:focus, .form-control-lg:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.25);
-}
-
-/* Reservation Page Styling */
-.reservation-form-container {
-  background: white;
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.reservation-form-container h1 {
-  color: var(--primary-color);
-  font-weight: 700;
-  margin-bottom: 2rem;
-}
-
-.reservation-form-container .form-label {
-  font-weight: 500;
-  color: var(--dark-color);
-  margin-bottom: 0.5rem;
-}
-
-.reservation-form-container .form-control,
-.reservation-form-container .form-select {
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  transition: all 0.3s ease;
-}
-
-.reservation-form-container .form-control:focus,
-.reservation-form-container .form-select:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.25);
-}
-
-.reservation-form-container .form-control.is-invalid,
-.reservation-form-container .form-select.is-invalid {
-  border-color: var(--danger-color);
-}
-
-.reservation-form-container .invalid-feedback {
-  font-size: 0.875rem;
-  color: var(--danger-color);
-  margin-top: 0.25rem;
-}
-
-.reservation-form-container textarea.form-control {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.reservation-form-container .btn-primary {
-  padding: 1rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.reservation-form-container .btn-primary:disabled {
-  background-color: #95a5a6;
-  border-color: #95a5a6;
-}
-
-@media (max-width: 768px) {
-  .reservation-form-container {
-    padding: 1.5rem;
-  }
-  
-  .reservation-form-container h1 {
-    font-size: 1.75rem;
-  }
-}
-
-/* Admin Panel Styling */
-.admin-nav {
-  background-color: white;
-  border-radius: 10px;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.admin-nav .nav-link {
-  color: var(--dark-color) !important;
-  padding: 0.75rem 1rem;
+/* Toast bildirimleri için özel stil */
+.Toastify__toast {
   border-radius: 8px;
-  margin-bottom: 0.5rem;
-  transition: all 0.3s ease;
 }
 
-.admin-nav .nav-link:hover {
-  background-color: rgba(44, 62, 80, 0.1);
+/* Form elemanları için genel stil */
+.form-control:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.25);
 }
 
-.admin-nav .nav-link.active {
-  background-color: var(--primary-color);
-  color: white !important;
+/* Butonlar için hover efekti */
+.btn-secondary:hover {
+  background-color: #c0392b;
+  border-color: #c0392b;
 }
 
-.admin-nav .nav-link i {
-  width: 20px;
-  text-align: center;
+/* Modal için özel stil */
+.modal-content {
+  background: rgba(33, 37, 41, 0.95) !important;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.dashboard-stat-card {
-  border-radius: 10px;
-  border: none;
-  transition: transform 0.3s ease;
-}
-
-.dashboard-stat-card:hover {
-  transform: translateY(-5px);
-}
-
-.dashboard-stat-card .stat-icon {
-  opacity: 0.8;
-}
-
-.dashboard-stat-card h2 {
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.dashboard-stat-card h6 {
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.8;
-}
-
-/* Table Styling in Admin Panel */
-.table th {
-  background-color: var(--primary-color);
-  color: white;
-  font-weight: 500;
-  border: none;
-}
-
-.table td {
-  vertical-align: middle;
-}
-
-.table img {
-  border-radius: 5px;
-}
-
-/* Modal Styling in Admin Panel */
 .modal-header {
-  background-color: var(--primary-color);
-  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.modal-header .btn-close {
-  color: white;
-  opacity: 1;
+.modal-title {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
 }
 
 .modal-body {
   padding: 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .modal-footer {
-  border-top: 1px solid #eee;
-  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
 }
 
-/* Form Styling in Admin Panel */
-.form-label {
+/* Modal kapatma butonu */
+.btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.btn-close:hover {
+  opacity: 1;
+}
+
+/* Modal içindeki form elemanları */
+.modal .form-control {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.modal .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.modal textarea.form-control {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modal .form-control:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.modal .form-label {
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
 
-.form-control:disabled {
-  background-color: #f8f9fa;
-  cursor: not-allowed;
+/* Modal içindeki tablo */
+.modal .table {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0;
 }
 
-.form-switch .form-check-input {
-  width: 3em;
-  height: 1.5em;
+.modal .table thead th {
+  background: rgba(33, 37, 41, 0.95);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  border: none;
+  padding: 1rem;
+  border-bottom: 2px solid rgba(231, 76, 60, 0.5);
 }
 
-.form-switch .form-check-input:checked {
-  background-color: var(--success-color);
-  border-color: var(--success-color);
+.modal .table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.3s ease;
 }
 
-/* Badge Styling in Admin Panel */
-.badge {
-  padding: 0.5em 0.75em;
+.modal .table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.modal .table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+/* Modal içindeki badge'ler */
+.modal .badge {
+  padding: 0.5em 1em;
   font-weight: 500;
+  border-radius: 2rem;
 }
 
-/* Button Styling in Admin Panel */
-.btn-sm {
+/* Modal içindeki loading spinner */
+.modal .spinner-border {
+  color: rgba(255, 255, 255, 0.9);
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+/* Modal içindeki boş durum mesajı */
+.modal .empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.modal .empty-state i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.modal .empty-state p {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Modal içindeki arama formu */
+.modal .search-form {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Modal içindeki sipariş detayları */
+.modal .order-details {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.25rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.modal .order-details:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.modal .order-details h6,
+.modal .order-details p,
+.modal .order-details span,
+.modal .order-details small {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.modal .order-details .text-muted {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Toplam fiyat için özel stil */
+.modal .order-total {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+}
+
+.modal .order-total h6 {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+/* Form grupları için margin */
+.modal .form-group + .form-group {
+  margin-top: 1rem;
+}
+
+/* Input group için özel stil */
+.modal .input-group .form-control {
+  border-right: none;
+}
+
+.modal .input-group-text {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Miktar ayarlama butonları için stil */
+.modal .quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.modal .quantity-controls .btn {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  min-width: 32px;
 }
 
-.btn-sm i {
-  font-size: 0.875rem;
+.modal .quantity-controls span {
+  color: rgba(255, 255, 255, 0.9);
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Responsive tasarım için ek stiller */
+@media (max-width: 768px) {
+  .modal-dialog {
+    margin: 0.5rem auto !important;
+    max-width: 96% !important;
+  }
+
+  .modal-content {
+    margin: 0 !important;
+    border-radius: 0.75rem;
+  }
+  
+  .modal .table td {
+    padding: 0.75rem;
+  }
+  
+  .modal .btn {
+    padding: 0.5rem 1rem;
+  }
+
+  .modal .search-form {
+    padding: 1rem;
+  }
+
+  .modal .order-details {
+    padding: 1rem;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+
+  .modal-footer {
+    padding: 1rem;
+  }
+
+  /* Mobil görünümde tablo düzenlemeleri */
+  .table-responsive {
+    margin: 0 -1rem;
+    width: calc(100% + 2rem);
+  }
+
+  .modal .table {
+    min-width: 100%;
+  }
+}
+
+/* Çok küçük ekranlar için ek düzenlemeler */
+@media (max-width: 375px) {
+  .modal-dialog {
+    margin: 0.25rem auto !important;
+    max-width: 98% !important;
+  }
+
+  .modal .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
 }

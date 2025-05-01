@@ -32,7 +32,6 @@ const ReservationManagement = () => {
         return dateA - dateB;
       });
 
-      console.log('Filtrelenmiş ve sıralanmış rezervasyonlar:', sortedReservations);
       setReservations(sortedReservations);
       setLoading(false);
     } catch (error) {
@@ -118,7 +117,7 @@ const ReservationManagement = () => {
           {reservations.map((reservation) => (
             <tr key={reservation.id}>
               <td>#{reservation.id.slice(-6)}</td>
-              <td>{reservation.name}</td>
+              <td>{reservation.customerName}</td>
               <td>{moment(reservation.date).format('DD/MM/YYYY')}</td>
               <td>{reservation.time}</td>
               <td>{reservation.guests}</td>
@@ -175,7 +174,7 @@ const ReservationManagement = () => {
           {selectedReservation && (
             <>
               <h5>Rezervasyon No: #{selectedReservation.id.slice(-6)}</h5>
-              <p><strong>Müşteri:</strong> {selectedReservation.name}</p>
+              <p><strong>Müşteri:</strong> {selectedReservation.customerName}</p>
               <p><strong>E-posta:</strong> {selectedReservation.email}</p>
               <p><strong>Telefon:</strong> {selectedReservation.phone}</p>
               <p><strong>Tarih:</strong> {moment(selectedReservation.date).format('DD/MM/YYYY')}</p>
