@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Button, Badge, Form } from 'react-bootstrap'
 import { FaShoppingCart, FaFilter } from 'react-icons/fa';
 import DataService from '../services/dataService';
 import { toast } from 'react-toastify';
+import './Menu.css';
 
 const Menu = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -97,83 +98,79 @@ const Menu = () => {
     : menuItems.filter(item => item.category === selectedCategory);
 
   return (
-    <Container className="py-5">
-      <h1 className="text-center mb-4">Menü</h1>
-      
-      {/* Kategori Filtresi */}
-      <div className="mb-4">
-        <Form.Select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="w-auto"
-        >
-          {categories.map(category => (
-            <option key={category} value={category}>
-              {category === 'all' ? 'Tüm Kategoriler' : category}
-            </option>
-          ))}
-        </Form.Select>
-      </div>
-
-      {loading ? (
-        <div className="text-center">
-          <div className="spinner-border text-secondary" role="status">
-            <span className="visually-hidden">Yükleniyor...</span>
-          </div>
+    <div className="menu-page">
+      <Container>
+        <h1 className="text-center">Menü</h1>
+        
+        {/* Kategori Filtresi */}
+        <div className="category-filter mx-auto">
+          <Form.Select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            {categories.map(category => (
+              <option key={category} value={category}>
+                {category === 'all' ? 'Tüm Kategoriler' : category}
+              </option>
+            ))}
+          </Form.Select>
         </div>
-      ) : (
-        <Row xs={1} md={2} lg={3} className="g-4">
-          {filteredItems.map(item => (
-            <Col key={item.id}>
-              <Card className="h-100 shadow-sm">
-                <Card.Img 
-                  variant="top" 
-                  src={item.image} 
-                  alt={item.name}
-                  style={{ height: '200px', objectFit: 'cover' }}
-                />
-                <Card.Body className="d-flex flex-column">
-                  <Card.Title className="d-flex justify-content-between align-items-center">
-                    <span>{item.name}</span>
-                    <Badge bg="secondary" className="ms-2">
-                      {item.price}₺
-                    </Badge>
-                  </Card.Title>
-                  <Card.Text className="text-muted mb-3">
-                    {item.description}
-                  </Card.Text>
-                  <div className="mt-auto">
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <small className="text-muted">
+
+        {loading ? (
+          <div className="spinner-container">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Yükleniyor...</span>
+            </div>
+          </div>
+        ) : (
+          <Row xs={1} md={2} lg={3} className="g-4">
+            {filteredItems.map(item => (
+              <Col key={item.id}>
+                <Card className="menu-card">
+                  <Card.Img 
+                    variant="top" 
+                    src={item.image} 
+                    alt={item.name}
+                  />
+                  <Card.Body>
+                    <Card.Title className="d-flex justify-content-between align-items-center">
+                      <span>{item.name}</span>
+                      <Badge className="price-badge">
+                        {item.price}₺
+                      </Badge>
+                    </Card.Title>
+                    <Card.Text>
+                      {item.description}
+                    </Card.Text>
+                    <div className="menu-info">
+                      <small>
                         Stok: {item.stock}
                       </small>
-                      <small className="text-muted">
+                      <small>
                         Kategori: {item.category}
                       </small>
                     </div>
                     <div className="d-flex justify-content-between align-items-center">
-                      <div className="d-flex align-items-center">
-                        <span className="text-secondary">
-                          {getCartItemCount(item.id) > 0 && `Sepette: ${getCartItemCount(item.id)} adet`}
-                        </span>
-                      </div>
+                      <span className="cart-count">
+                        {getCartItemCount(item.id) > 0 && `Sepette: ${getCartItemCount(item.id)} adet`}
+                      </span>
                       <Button
-                        variant="secondary"
+                        className="cart-button"
                         onClick={() => addToCart(item)}
                         disabled={item.stock === 0}
                       >
-                        <FaShoppingCart className="me-1" />
+                        <FaShoppingCart />
                         {item.stock === 0 ? 'Tükendi' : 'Sepete Ekle'}
                       </Button>
                     </div>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      )}
-    </Container>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        )}
+      </Container>
+    </div>
   );
 };
 

@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Badge, Button, Modal } from 'react-bootstrap';
+import { Table, Button, Form, Row, Col, Badge } from 'react-bootstrap';
 import DataService from '../../../services/dataService';
 import { toast } from 'react-toastify';
 import moment from 'moment';
+import 'moment/locale/tr';
+import './Table.css';
+
+moment.locale('tr');
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     fetchOrders();
@@ -17,231 +21,161 @@ const OrderManagement = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const ordersData = await DataService.getOrders();
-      
-      if (!Array.isArray(ordersData)) {
-        throw new Error('Sipariş verileri beklenen formatta değil');
-      }
-      
-      // Verileri doğrula ve varsayılan değerler ekle
-      const validatedOrders = ordersData.map(order => ({
-        id: order.id || '',
-        orderNumber: order.orderNumber || 0,
-        customerName: order.customerName || 'Misafir Müşteri',
-        customerPhone: order.customerPhone || '',
-        items: Array.isArray(order.items) ? order.items : [],
-        total: order.total || 0,
-        status: order.status || 'pending',
-        createdAt: order.createdAt || new Date().toISOString()
-      }));
-      
-      setOrders(validatedOrders);
+      const allOrders = await DataService.getOrders();
+      setOrders(allOrders);
     } catch (error) {
-      console.error('Error in fetchOrders:', error);
-      toast.error('Siparişler yüklenirken bir hata oluştu: ' + error.message);
-      setOrders([]);
+      toast.error('Siparişler yüklenirken bir hata oluştu');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleShowDetails = (order) => {
-    setSelectedOrder(order);
-    setShowDetailsModal(true);
-  };
-
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       await DataService.updateOrderStatus(orderId, newStatus);
-      fetchOrders();
+      setOrders(orders.map(order => 
+        order.id === orderId ? { ...order, status: newStatus } : order
+      ));
       toast.success('Sipariş durumu güncellendi');
     } catch (error) {
-      console.error('Error updating order status:', error);
-      toast.error('Sipariş durumu güncellenirken bir hata oluştu');
+      toast.error('Durum güncellenirken bir hata oluştu');
     }
   };
 
   const getStatusBadge = (status) => {
-    const statusColors = {
-      pending: 'warning',
-      preparing: 'info',
-      ready: 'primary',
-      delivered: 'success',
-      cancelled: 'danger'
+    const statusConfig = {
+      pending: { text: 'Beklemede', icon: 'fas fa-clock' },
+      preparing: { text: 'Hazırlanıyor', icon: 'fas fa-utensils' },
+      ready: { text: 'Hazır', icon: 'fas fa-check-circle' },
+      delivered: { text: 'Teslim Edildi', icon: 'fas fa-truck' },
+      cancelled: { text: 'İptal Edildi', icon: 'fas fa-times-circle' }
     };
 
-    const statusTexts = {
-      pending: 'Beklemede',
-      preparing: 'Hazırlanıyor',
-      ready: 'Hazır',
-      delivered: 'Teslim Edildi',
-      cancelled: 'İptal Edildi'
-    };
+    const config = statusConfig[status] || { text: status, icon: 'fas fa-info-circle' };
 
     return (
-      <Badge bg={statusColors[status]}>
-        {statusTexts[status]}
-      </Badge>
+      <span className={`status-badge ${status}`}>
+        <i className={config.icon}></i>
+        {config.text}
+      </span>
     );
   };
 
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   if (loading) {
     return (
-      <div className="text-center py-4">
+      <div className="text-center py-5">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">Yükleniyor...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="order-management">
-      <h2 className="mb-4">Sipariş Yönetimi</h2>
+    <div>
+      {/* Table Filters */}
+      <div className="table-filters">
+        <Form.Control
+          type="text"
+          placeholder="Müşteri adı veya sipariş no ile ara..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Form.Select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">Tüm Durumlar</option>
+          <option value="pending">Beklemede</option>
+          <option value="preparing">Hazırlanıyor</option>
+          <option value="ready">Hazır</option>
+          <option value="delivered">Teslim Edildi</option>
+          <option value="cancelled">İptal Edildi</option>
+        </Form.Select>
+      </div>
 
-      <Table responsive striped bordered hover>
-        <thead>
-          <tr>
-            <th>Sipariş No</th>
-            <th>Müşteri</th>
-            <th>Ürünler</th>
-            <th>Toplam</th>
-            <th>Durum</th>
-            <th>Tarih</th>
-            <th>İşlemler</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.id}>
-              <td>#{order.orderNumber || 'N/A'}</td>
-              <td>
-                {order.customerName}
-                {order.customerPhone && <div className="text-muted small">{order.customerPhone}</div>}
-              </td>
-              <td>
-                <ul className="list-unstyled mb-0">
-                  {(order.items || []).map((item, index) => (
-                    <li key={index}>
-                      {item.name} x {item.quantity}
-                    </li>
-                  ))}
-                </ul>
-              </td>
-              <td>{order.total || 0}₺</td>
-              <td>{getStatusBadge(order.status || 'pending')}</td>
-              <td>{moment(order.createdAt).format('DD/MM/YYYY HH:mm')}</td>
-              <td>
-                <Button
-                  variant="info"
-                  size="sm"
-                  className="me-2"
-                  onClick={() => handleShowDetails(order)}
-                >
-                  Detaylar
-                </Button>
-                {order.status === 'pending' && (
-                  <Button
-                    variant="success"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleStatusChange(order.id, 'preparing')}
-                  >
-                    Hazırlanıyor
-                  </Button>
-                )}
-                {order.status === 'preparing' && (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleStatusChange(order.id, 'ready')}
-                  >
-                    Hazır
-                  </Button>
-                )}
-                {order.status === 'ready' && (
-                  <Button
-                    variant="success"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleStatusChange(order.id, 'delivered')}
-                  >
-                    Teslim Edildi
-                  </Button>
-                )}
-                {order.status !== 'delivered' && order.status !== 'cancelled' && (
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleStatusChange(order.id, 'cancelled')}
-                  >
-                    İptal Et
-                  </Button>
-                )}
-              </td>
+      {/* Orders Table */}
+      {filteredOrders.length === 0 ? (
+        <div className="table-empty-state">
+          <i className="fas fa-clipboard-list"></i>
+          <p>Sipariş bulunamadı</p>
+        </div>
+      ) : (
+        <Table className="admin-table">
+          <thead>
+            <tr>
+              <th>Sipariş No</th>
+              <th>Müşteri</th>
+              <th>Ürünler</th>
+              <th>Toplam</th>
+              <th>Durum</th>
+              <th>Tarih</th>
+              <th>İşlemler</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
-
-      {/* Details Modal */}
-      <Modal show={showDetailsModal} onHide={() => setShowDetailsModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Sipariş Detayları</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedOrder && (
-            <>
-              <h5>Sipariş No: #{selectedOrder.orderNumber}</h5>
-              <p><strong>Müşteri:</strong> {selectedOrder.customerName}</p>
-              {selectedOrder.customerPhone && (
-                <p><strong>Telefon:</strong> {selectedOrder.customerPhone}</p>
-              )}
-              <p><strong>Tarih:</strong> {moment(selectedOrder.createdAt).format('DD/MM/YYYY HH:mm')}</p>
-              <p><strong>Durum:</strong> {getStatusBadge(selectedOrder.status)}</p>
-              
-              <h6 className="mt-4">Sipariş Öğeleri:</h6>
-              <Table responsive striped>
-                <thead>
-                  <tr>
-                    <th>Ürün</th>
-                    <th>Adet</th>
-                    <th>Birim Fiyat</th>
-                    <th>Toplam</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedOrder.items.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.name}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.price}₺</td>
-                      <td>{item.price * item.quantity}₺</td>
-                    </tr>
-                  ))}
-                  <tr>
-                    <td colSpan="3" className="text-end"><strong>Toplam:</strong></td>
-                    <td><strong>{selectedOrder.total}₺</strong></td>
-                  </tr>
-                </tbody>
-              </Table>
-
-              {selectedOrder.notes && (
-                <div className="mt-3">
-                  <strong>Notlar:</strong>
-                  <p className="mb-0">{selectedOrder.notes}</p>
-                </div>
-              )}
-            </>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDetailsModal(false)}>
-            Kapat
-          </Button>
-        </Modal.Footer>
-      </Modal>
+          </thead>
+          <tbody>
+            {filteredOrders.map(order => (
+              <tr key={order.id}>
+                <td>#{order.orderNumber}</td>
+                <td>
+                  <div>{order.customerName}</div>
+                  <small className="text-muted">{order.customerPhone}</small>
+                </td>
+                <td>
+                  <ul className="list-unstyled mb-0">
+                    {order.items.map((item, index) => (
+                      <li key={index}>
+                        {item.name} x {item.quantity}
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td>{order.total}₺</td>
+                <td>{getStatusBadge(order.status)}</td>
+                <td>{moment(order.createdAt).format('DD/MM/YYYY HH:mm')}</td>
+                <td>
+                  <div className="table-actions">
+                    <Button
+                      variant="outline-secondary"
+                      size="sm"
+                      onClick={() => handleStatusChange(order.id, 'preparing')}
+                      disabled={order.status !== 'pending'}
+                    >
+                      <i className="fas fa-utensils"></i>
+                      Hazırla
+                    </Button>
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={() => handleStatusChange(order.id, 'ready')}
+                      disabled={order.status !== 'preparing'}
+                    >
+                      <i className="fas fa-check"></i>
+                      Hazır
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => handleStatusChange(order.id, 'cancelled')}
+                      disabled={order.status === 'delivered' || order.status === 'cancelled'}
+                    >
+                      <i className="fas fa-times"></i>
+                      İptal
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
     </div>
   );
 };

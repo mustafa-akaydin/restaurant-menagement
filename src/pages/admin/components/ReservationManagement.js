@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Badge, Button, Modal, Form } from 'react-bootstrap';
+import { Table, Button, Form, Modal } from 'react-bootstrap';
 import DataService from '../../../services/dataService';
 import { toast } from 'react-toastify';
 import moment from 'moment';
+import 'moment/locale/tr';
+import './Table.css';
+
+moment.locale('tr');
 
 const ReservationManagement = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState(moment().format('YYYY-MM-DD'));
 
   useEffect(() => {
@@ -35,8 +41,7 @@ const ReservationManagement = () => {
       setReservations(sortedReservations);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching reservations:', error);
-      toast.error('Rezervasyonlar yüklenirken bir hata oluştu.');
+      toast.error('Rezervasyonlar yüklenirken bir hata oluştu');
       setLoading(false);
     }
   };
@@ -44,11 +49,10 @@ const ReservationManagement = () => {
   const handleStatusUpdate = async (reservationId, newStatus) => {
     try {
       await DataService.updateReservationStatus(reservationId, newStatus);
-      toast.success('Rezervasyon durumu güncellendi!');
+      toast.success('Rezervasyon durumu güncellendi');
       fetchReservations();
     } catch (error) {
-      console.error('Error updating reservation status:', error);
-      toast.error('Rezervasyon durumu güncellenirken bir hata oluştu.');
+      toast.error('Rezervasyon durumu güncellenirken bir hata oluştu');
     }
   };
 
@@ -58,112 +62,146 @@ const ReservationManagement = () => {
   };
 
   const getStatusBadge = (status) => {
-    const statusColors = {
-      pending: 'warning',
-      confirmed: 'success',
-      cancelled: 'danger',
-      completed: 'info'
+    const statusConfig = {
+      pending: { text: 'Beklemede', icon: 'fas fa-clock' },
+      confirmed: { text: 'Onaylandı', icon: 'fas fa-check-circle' },
+      cancelled: { text: 'İptal Edildi', icon: 'fas fa-times-circle' },
+      completed: { text: 'Tamamlandı', icon: 'fas fa-check-double' }
     };
 
-    const statusTexts = {
-      pending: 'Beklemede',
-      confirmed: 'Onaylandı',
-      cancelled: 'İptal Edildi',
-      completed: 'Tamamlandı'
-    };
+    const config = statusConfig[status] || { text: status, icon: 'fas fa-info-circle' };
 
     return (
-      <Badge bg={statusColors[status]}>
-        {statusTexts[status]}
-      </Badge>
+      <span className={`status-badge ${status}`}>
+        <i className={config.icon}></i>
+        {config.text}
+      </span>
     );
   };
 
+  const filteredReservations = reservations.filter(reservation => {
+    const matchesSearch = reservation.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         reservation.id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || reservation.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
   if (loading) {
     return (
-      <div className="text-center py-4">
+      <div className="text-center py-5">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">Yükleniyor...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="reservation-management">
+    <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Rezervasyon Yönetimi</h2>
+      </div>
+
+      {/* Table Filters */}
+      <div className="table-filters">
+        <Form.Control
+          type="text"
+          placeholder="Müşteri adı veya rezervasyon no ile ara..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
         <Form.Control
           type="date"
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
-          style={{ width: 'auto' }}
         />
+        <Form.Select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="all">Tüm Durumlar</option>
+          <option value="pending">Beklemede</option>
+          <option value="confirmed">Onaylandı</option>
+          <option value="cancelled">İptal Edildi</option>
+          <option value="completed">Tamamlandı</option>
+        </Form.Select>
       </div>
 
-      <Table responsive striped bordered hover>
-        <thead>
-          <tr>
-            <th>Rezervasyon No</th>
-            <th>Müşteri</th>
-            <th>Tarih</th>
-            <th>Saat</th>
-            <th>Kişi Sayısı</th>
-            <th>Durum</th>
-            <th>İşlemler</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reservations.map((reservation) => (
-            <tr key={reservation.id}>
-              <td>#{reservation.id.slice(-6)}</td>
-              <td>{reservation.customerName}</td>
-              <td>{moment(reservation.date).format('DD/MM/YYYY')}</td>
-              <td>{reservation.time}</td>
-              <td>{reservation.guests}</td>
-              <td>{getStatusBadge(reservation.status)}</td>
-              <td>
-                <Button
-                  variant="info"
-                  size="sm"
-                  className="me-2"
-                  onClick={() => handleShowDetails(reservation)}
-                >
-                  <i className="fas fa-eye"></i>
-                </Button>
-                {reservation.status === 'pending' && (
-                  <>
-                    <Button
-                      variant="success"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handleStatusUpdate(reservation.id, 'confirmed')}
-                    >
-                      <i className="fas fa-check"></i>
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleStatusUpdate(reservation.id, 'cancelled')}
-                    >
-                      <i className="fas fa-times"></i>
-                    </Button>
-                  </>
-                )}
-                {reservation.status === 'confirmed' && (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => handleStatusUpdate(reservation.id, 'completed')}
-                  >
-                    <i className="fas fa-check-double"></i>
-                  </Button>
-                )}
-              </td>
+      {/* Reservations Table */}
+      {filteredReservations.length === 0 ? (
+        <div className="table-empty-state">
+          <i className="fas fa-calendar-check"></i>
+          <p>Rezervasyon bulunamadı</p>
+        </div>
+      ) : (
+        <Table className="admin-table">
+          <thead>
+            <tr>
+              <th>Rezervasyon No</th>
+              <th>Müşteri</th>
+              <th>Tarih</th>
+              <th>Saat</th>
+              <th>Kişi Sayısı</th>
+              <th>Durum</th>
+              <th>İşlemler</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {filteredReservations.map((reservation) => (
+              <tr key={reservation.id}>
+                <td>#{reservation.id.slice(-6)}</td>
+                <td>{reservation.customerName}</td>
+                <td>{moment(reservation.date).format('DD/MM/YYYY')}</td>
+                <td>{reservation.time}</td>
+                <td>{reservation.guests}</td>
+                <td>{getStatusBadge(reservation.status)}</td>
+                <td>
+                  <div className="table-actions">
+                    <Button
+                      variant="outline-info"
+                      size="sm"
+                      onClick={() => handleShowDetails(reservation)}
+                    >
+                      <i className="fas fa-eye"></i>
+                      Detaylar
+                    </Button>
+                    {reservation.status === 'pending' && (
+                      <>
+                        <Button
+                          variant="outline-success"
+                          size="sm"
+                          onClick={() => handleStatusUpdate(reservation.id, 'confirmed')}
+                        >
+                          <i className="fas fa-check"></i>
+                          Onayla
+                        </Button>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleStatusUpdate(reservation.id, 'cancelled')}
+                        >
+                          <i className="fas fa-times"></i>
+                          İptal
+                        </Button>
+                      </>
+                    )}
+                    {reservation.status === 'confirmed' && (
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        onClick={() => handleStatusUpdate(reservation.id, 'completed')}
+                      >
+                        <i className="fas fa-check-double"></i>
+                        Tamamla
+                      </Button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
 
       {/* Details Modal */}
       <Modal show={showDetailsModal} onHide={() => setShowDetailsModal(false)}>

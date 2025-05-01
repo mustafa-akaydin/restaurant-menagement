@@ -9,6 +9,7 @@ import UserManagement from './components/UserManagement';
 import DashboardStats from './components/DashboardStats';
 import { useNavigate } from 'react-router-dom';
 import DataService from '../../services/dataService';
+import './AdminPanel.css';
 
 const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,6 @@ const AdminPanel = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // DataService üzerinden verileri al
         const orders = await DataService.getOrders();
         const reservations = await DataService.getReservations();
         const menuItems = await DataService.getMenuItems();
@@ -74,81 +74,86 @@ const AdminPanel = () => {
 
   if (loading) {
     return (
-      <Container className="py-5">
-        <div className="text-center">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
+      <div className="admin-panel d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+        <div className="loading-spinner spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
         </div>
-      </Container>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Container className="py-5">
-        <Alert variant="danger">{error}</Alert>
-      </Container>
+      <div className="admin-panel">
+        <Container className="py-5">
+          <Alert variant="danger" className="error-alert">
+            <Alert.Heading>Hata!</Alert.Heading>
+            <p>{error}</p>
+          </Alert>
+        </Container>
+      </div>
     );
   }
 
   return (
-    <Container fluid className="py-4">
-      <h1 className="mb-4">Admin Panel</h1>
-      
-      {/* Dashboard Stats */}
-      <DashboardStats stats={stats} />
+    <div className="admin-panel pt-4">
+      <Container fluid className="py-4 ">
+        <h1 className="page-title">Admin Paneli</h1>
+        
+        {/* Dashboard Stats */}
+        <DashboardStats stats={stats} />
 
-      {/* Admin Tabs */}
-      <Tab.Container id="admin-tabs" defaultActiveKey="menu">
-        <Row>
-          <Col md={3} lg={2}>
-            <Nav variant="pills" className="flex-column admin-nav">
-              <Nav.Item>
-                <Nav.Link eventKey="menu">
-                  <i className="fas fa-utensils me-2"></i>
-                  Menü Yönetimi
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="orders">
-                  <i className="fas fa-shopping-cart me-2"></i>
-                  Sipariş Yönetimi
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="reservations">
-                  <i className="fas fa-calendar-alt me-2"></i>
-                  Rezervasyon Yönetimi
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="users">
-                  <i className="fas fa-users me-2"></i>
-                  Kullanıcı Yönetimi
-                </Nav.Link>
-              </Nav.Item>
-            </Nav>
-          </Col>
-          <Col md={9} lg={10}>
-            <Tab.Content>
-              <Tab.Pane eventKey="menu">
-                <MenuManagement />
-              </Tab.Pane>
-              <Tab.Pane eventKey="orders">
-                <OrderManagement />
-              </Tab.Pane>
-              <Tab.Pane eventKey="reservations">
-                <ReservationManagement />
-              </Tab.Pane>
-              <Tab.Pane eventKey="users">
-                <UserManagement />
-              </Tab.Pane>
-            </Tab.Content>
-          </Col>
-        </Row>
-      </Tab.Container>
-    </Container>
+        {/* Admin Tabs */}
+        <Tab.Container id="admin-tabs" defaultActiveKey="menu">
+          <Row>
+            <Col md={3} lg={2}>
+              <Nav variant="pills" className="flex-column admin-nav">
+                <Nav.Item>
+                  <Nav.Link eventKey="menu">
+                    <i className="fas fa-utensils"></i>
+                    Menü Yönetimi
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="orders">
+                    <i className="fas fa-shopping-cart"></i>
+                    Sipariş Yönetimi
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="reservations">
+                    <i className="fas fa-calendar-alt"></i>
+                    Rezervasyon Yönetimi
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="users">
+                    <i className="fas fa-users"></i>
+                    Kullanıcı Yönetimi
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
+            </Col>
+            <Col md={9} lg={10}>
+              <Tab.Content className="tab-content">
+                <Tab.Pane eventKey="menu">
+                  <MenuManagement />
+                </Tab.Pane>
+                <Tab.Pane eventKey="orders">
+                  <OrderManagement />
+                </Tab.Pane>
+                <Tab.Pane eventKey="reservations">
+                  <ReservationManagement />
+                </Tab.Pane>
+                <Tab.Pane eventKey="users">
+                  <UserManagement />
+                </Tab.Pane>
+              </Tab.Content>
+            </Col>
+          </Row>
+        </Tab.Container>
+      </Container>
+    </div>
   );
 };
 

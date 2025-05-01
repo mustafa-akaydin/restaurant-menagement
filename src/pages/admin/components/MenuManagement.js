@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Alert } from 'react-bootstrap';
+import { Table, Button, Form, Modal } from 'react-bootstrap';
 import DataService from '../../../services/dataService';
 import { toast } from 'react-toastify';
+import './Table.css';
 
 const MenuManagement = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -28,8 +31,7 @@ const MenuManagement = () => {
       setMenuItems(items);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching menu items:', error);
-      toast.error('Menü öğeleri yüklenirken bir hata oluştu.');
+      toast.error('Menü öğeleri yüklenirken bir hata oluştu');
       setLoading(false);
     }
   };
@@ -79,19 +81,16 @@ const MenuManagement = () => {
     e.preventDefault();
     try {
       if (editingItem) {
-        // Güncelleme işlemi
         await DataService.updateMenuItem(editingItem.id, formData);
-        toast.success('Menü öğesi başarıyla güncellendi!');
+        toast.success('Menü öğesi başarıyla güncellendi');
       } else {
-        // Yeni öğe ekleme
         await DataService.addMenuItem(formData);
-        toast.success('Yeni menü öğesi başarıyla eklendi!');
+        toast.success('Yeni menü öğesi başarıyla eklendi');
       }
       handleModalClose();
       fetchMenuItems();
     } catch (error) {
-      console.error('Error saving menu item:', error);
-      toast.error('Menü öğesi kaydedilirken bir hata oluştu.');
+      toast.error('Menü öğesi kaydedilirken bir hata oluştu');
     }
   };
 
@@ -99,27 +98,42 @@ const MenuManagement = () => {
     if (window.confirm('Bu menü öğesini silmek istediğinizden emin misiniz?')) {
       try {
         await DataService.deleteMenuItem(id);
-        toast.success('Menü öğesi başarıyla silindi!');
+        toast.success('Menü öğesi başarıyla silindi');
         fetchMenuItems();
       } catch (error) {
-        console.error('Error deleting menu item:', error);
-        toast.error('Menü öğesi silinirken bir hata oluştu.');
+        toast.error('Menü öğesi silinirken bir hata oluştu');
       }
     }
   };
 
+  const getAvailabilityBadge = (isAvailable) => {
+    return (
+      <span className={`status-badge ${isAvailable ? 'available' : 'unavailable'}`}>
+        <i className={`fas fa-${isAvailable ? 'check-circle' : 'times-circle'}`}></i>
+        {isAvailable ? 'Mevcut' : 'Tükendi'}
+      </span>
+    );
+  };
+
+  const filteredItems = menuItems.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
   if (loading) {
     return (
-      <div className="text-center py-4">
+      <div className="text-center py-5">
         <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">Yükleniyor...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="menu-management">
+    <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Menü Yönetimi</h2>
         <Button variant="primary" onClick={() => handleModalShow()}>
@@ -128,60 +142,88 @@ const MenuManagement = () => {
         </Button>
       </div>
 
-      <Table responsive striped bordered hover>
-        <thead>
-          <tr>
-            <th>Görsel</th>
-            <th>Ad</th>
-            <th>Açıklama</th>
-            <th>Fiyat</th>
-            <th>Kategori</th>
-            <th>Stok</th>
-            <th>Durum</th>
-            <th>İşlemler</th>
-          </tr>
-        </thead>
-        <tbody>
-          {menuItems.map((item) => (
-            <tr key={item.id}>
-              <td>
-                <img 
-                  src={item.image || 'https://via.placeholder.com/50'} 
-                  alt={item.name}
-                  style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                />
-              </td>
-              <td>{item.name}</td>
-              <td>{item.description}</td>
-              <td>{item.price}₺</td>
-              <td>{item.category}</td>
-              <td>{item.stock || 0}</td>
-              <td>
-                <span className={`badge bg-${item.isAvailable ? 'success' : 'danger'}`}>
-                  {item.isAvailable ? 'Mevcut' : 'Tükendi'}
-                </span>
-              </td>
-              <td>
-                <Button 
-                  variant="warning" 
-                  size="sm" 
-                  className="me-2"
-                  onClick={() => handleModalShow(item)}
-                >
-                  <i className="fas fa-edit"></i>
-                </Button>
-                <Button 
-                  variant="danger" 
-                  size="sm"
-                  onClick={() => handleDelete(item.id)}
-                >
-                  <i className="fas fa-trash"></i>
-                </Button>
-              </td>
+      {/* Table Filters */}
+      <div className="table-filters">
+        <Form.Control
+          type="text"
+          placeholder="Ürün adı veya açıklama ile ara..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Form.Select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        >
+          <option value="all">Tüm Kategoriler</option>
+          <option value="Pizza">Pizza</option>
+          <option value="Makarna">Makarna</option>
+          <option value="Ana Yemek">Ana Yemek</option>
+          <option value="Tatlı">Tatlı</option>
+          <option value="Çorba">Çorba</option>
+        </Form.Select>
+      </div>
+
+      {/* Menu Items Table */}
+      {filteredItems.length === 0 ? (
+        <div className="table-empty-state">
+          <i className="fas fa-utensils"></i>
+          <p>Menü öğesi bulunamadı</p>
+        </div>
+      ) : (
+        <Table className="admin-table">
+          <thead>
+            <tr>
+              <th>Görsel</th>
+              <th>Ad</th>
+              <th>Açıklama</th>
+              <th>Fiyat</th>
+              <th>Kategori</th>
+              <th>Stok</th>
+              <th>Durum</th>
+              <th>İşlemler</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {filteredItems.map((item) => (
+              <tr key={item.id}>
+                <td>
+                  <img 
+                    src={item.image || 'https://via.placeholder.com/50'} 
+                    alt={item.name}
+                    className="menu-item-image"
+                  />
+                </td>
+                <td>{item.name}</td>
+                <td>{item.description}</td>
+                <td>{item.price}₺</td>
+                <td>{item.category}</td>
+                <td>{item.stock || 0}</td>
+                <td>{getAvailabilityBadge(item.isAvailable)}</td>
+                <td>
+                  <div className="table-actions">
+                    <Button
+                      variant="outline-warning"
+                      size="sm"
+                      onClick={() => handleModalShow(item)}
+                    >
+                      <i className="fas fa-edit"></i>
+                      Düzenle
+                    </Button>
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      <i className="fas fa-trash"></i>
+                      Sil
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
 
       {/* Add/Edit Modal */}
       <Modal show={showModal} onHide={handleModalClose}>
